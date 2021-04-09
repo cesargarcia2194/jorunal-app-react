@@ -2,9 +2,11 @@ import React from 'react'
 import {Link} from 'react-router-dom';
 import validator from 'validator';
 import { useForm } from '../../hooks/useForm';
+import { useDispatch } from 'react-redux';
+import { setError, removeError } from '../../actions/ui';
 export const RegisterScreen = () => {
 
-
+    const dispatch = useDispatch();
     const [values, handleInputChange] = useForm({
             name:'cesar',
             email:'cesar@cesar.com',
@@ -23,14 +25,24 @@ export const RegisterScreen = () => {
         console.log(values);
     }
     const isFormValid = ()=>{
+        let msg = '';
+        let valid = true;
         if(name.trim().length ===0){
-            return false
+            msg = 'Name is required'
+            valid = false;
         }else if(!validator.isEmail(email)){
-            return false
+            msg = 'Email is not valid'
+            valid = false;
         }else if(password !== password2 || password.length < 5){
-            return false
+            msg = 'Password should be at least 6 characters and match'
+            valid = false;
         }
-        return true;
+        if(!valid){
+            dispatch(setError(msg));
+            return valid;
+        }
+        dispatch(removeError());
+        return valid;
     }
     return (
         <>
