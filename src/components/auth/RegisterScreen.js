@@ -2,24 +2,26 @@ import React from 'react'
 import {Link} from 'react-router-dom';
 import validator from 'validator';
 import { useForm } from '../../hooks/useForm';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setError, removeError } from '../../actions/ui';
+import { startRegisterEmailPassword } from '../../actions/auth';
 export const RegisterScreen = () => {
 
     const dispatch = useDispatch();
+    const {loading, msgError} = useSelector( state => state.ui );
+    
     const [values, handleInputChange] = useForm({
             name:'cesar',
             email:'cesar@cesar.com',
-            password: '12345',
-            password2:'12345'
+            password: '123456',
+            password2:'123456'
         });
     const {name,email,password,password2} = values;
 
     const handleRegister = (e) =>{
         e.preventDefault();
         if(isFormValid()){
-            console.log('formulario correcto')
-
+            dispatch(startRegisterEmailPassword(email, password, name));
         }
 
         console.log(values);
@@ -48,9 +50,15 @@ export const RegisterScreen = () => {
         <>
             <h3 className="auth__title">Register</h3>
             <form onSubmit={handleRegister}>
-                <div className="auth__alert-error">
-                    Hola mundo
-                </div>
+                
+                {
+                    msgError && 
+                    (   <div className="auth__alert-error">
+                            {msgError}
+                        </div>
+                    )
+                }
+                
                 <input 
                     type="text"
                     placeholder="name"
@@ -88,8 +96,9 @@ export const RegisterScreen = () => {
                 <button
                     type="submit"
                     className="btn btn-primary btn-block mb-5"
+                    disabled={loading}
                 >
-                    Login
+                    Sing in
                 </button>
         
                 <Link to="/auth/login"
